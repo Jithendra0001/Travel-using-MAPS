@@ -7,76 +7,23 @@
 #define ll long long
 using namespace std;
 #define pb push_back
-int st,e;
+int From,To;
 
-unordered_map<int,int>m;
+unordered_map<int,int>is_train_present; 
 
 int dis=INT_MAX;
 int count=0;
 int vis1[1000005]={false};
 int vis2[1000005]={false};
 
-vector<int>path;
-vector<int>v;
+vector<int>Shortest_Path;
+vector<int>Maintains_Path;
 vector<pair<int,int>>train;
-int chaitu=0;
-int c=0;
-vector<int>bus,h;
+int Train_Count=0;
+int Extra_Train_Count=0;
+vector<int>Bus_Path,h;
 int x=INT_MAX;
 
-void output(map<int,string>jithu)
-{
-    cout<<"Bus path is:"<<endl;
-    cout<<jithu[bus[0]];
-    for(int it=1;it<bus.size();it++) {cout<<" ~~> "<<jithu[bus[it]];}
-    cout<<"\nDistance: "<<(bus.size()-1)*3<<endl;
-
-    //Path for train
-    if(h.size()>1)
-    path.insert(path.end()-1,h.rbegin(),h.rend()-1);
-    cout<<"Train path is"<<endl;
-    vector<int>q;
-    for(int i=0;i<path.size();i++)
-    {
-        if(m[path[i]]==1) q.pb(i);
-    }
-    int j=0,z=0;
-    if(q.size()<2) {cout<<"No Train path available"<<endl;}
-    else{
-    for(int i=0;i<path.size();i++)
-    {
-        if(q[j]==i) {z=1;}
-        if(z==0) cout<<jithu[path[i]]<<" ";
-        if(z==1) {cout<<jithu[path[q[j++]]]<<" ";i=q[j]-1;if(j==q.size()) {z=0;i=q.back();}}
-    }
-    cout<<endl<<dis<<endl;}
-}
-void Start_Journey(map<int,string>jithu)
-{
-    cout<<"Select from address:\n";
-    for(auto it:jithu)
-    {
-        cout<<it.first+1<<") "<<it.second;
-        if(m[it.first]==1) cout<<"( T )";
-        cout<<endl;
-    }
-    int start;cin>>start;
-    st=start-1;
-    cout<<"Select to address:\n";
-    for(auto it:jithu)
-    {
-        if(it.first==st) continue;
-        if(it.first<st) cout<<it.first+1;
-        else cout<<it.first;
-        cout<<") "<<it.second;
-        if(m[it.first]==1) cout<<"( T )";
-        cout<<endl;
-    }
-    int end;
-    cin>>end;
-    if(end<st) end--;
-    e=end;
-}
 void Telangana()
 {
 cout<<"                   Nijamabad<-->Adilabad"<<endl;
@@ -91,6 +38,71 @@ cout<<"         /          /                 \\"<<endl;
 cout<<"   Tirupati<-->Nellore<-->Ongole<-->Guntur<-->Vijayawada<-->Rajahmundry<-->Vizag<-->Vijayanagaram<-->Srikakulam"<<endl;
     cout<<endl;
 }
+    /*
+Map of Ts:               __Nijamabad<-->Adilabad
+                        /
+                  ___Hyderabad<-->Warangal<-->Khammam
+   Map Of AP:    /                               |
+               Kurnool       Kadapa              |
+          _____/  \___________/__\_____          |
+         /          /                 \          |
+   Tirupati<-->Nellore<-->Ongole<-->Guntur<-->Vijayawada<-->Rajahmundry<-->Vizag<-->Vijayanagaram<-->Srikakulam
+    
+    */
+void output(map<int,string>Graph_Num)
+{
+    cout<<"Bus_Path Shortest_Path is:"<<endl;
+    cout<<Graph_Num[Bus_Path[0]];
+    for(int it=1;it<Bus_Path.size();it++) {cout<<" ~~> "<<Graph_Num[Bus_Path[it]];}
+    cout<<"\nDistance: "<<(Bus_Path.size()-1)*3<<endl;
+
+    //Shortest_Path for train
+    if(h.size()>1)
+    Shortest_Path.insert(Shortest_Path.end()-1,h.rbegin(),h.rend()-1);
+    cout<<"Train Shortest_Path is"<<endl;
+    vector<int>q;
+    for(int i=0;i<Shortest_Path.size();i++)
+    {
+        if(is_train_present[Shortest_Path[i]]==1) q.pb(i);
+    }
+    int j=0,z=0;
+    if(q.size()<2) {cout<<"No Train Shortest_Path available"<<endl;}
+    else{
+    for(int i=0;i<Shortest_Path.size();i++)
+    {
+        if(q[j]==i) {z=1;}
+        if(z==0) cout<<Graph_Num[Shortest_Path[i]]<<" ";
+        if(z==1) {cout<<Graph_Num[Shortest_Path[q[j++]]]<<" ";i=q[j]-1;if(j==q.size()) {z=0;i=q.back();}}
+    }
+    cout<<endl<<dis<<endl;}
+}
+void From_Journey(map<int,string>Graph_Num)
+{
+    cout<<"Select from address:\n";
+    for(auto it:Graph_Num)
+    {
+        cout<<it.first+1<<") "<<it.second;
+        if(is_train_present[it.first]==1) cout<<"( T )";
+        cout<<endl;
+    }
+    int st;cin>>st;
+    From=st-1;
+    cout<<"Select to address:\n";
+    for(auto it:Graph_Num)
+    {
+        if(it.first==st) continue;
+        if(it.first<st) cout<<it.first+1;
+        else cout<<it.first;
+        cout<<") "<<it.second;
+        if(is_train_present[it.first]==1) cout<<"( T )";
+        cout<<endl;
+    }
+    int e;
+    cin>>e;
+    if(e<From) e--;
+    To=e;
+}
+
 void alpha(vector<vector<int>>g,int &s)
 {
 
@@ -103,7 +115,7 @@ void alpha(vector<vector<int>>g,int &s)
     {
         h=q.front();q.pop();
         int p=h.back();
-        if(m[p]==1) {c=c-((count-train.back().second)/3);return;}
+        if(is_train_present[p]==1) {Extra_Train_Count=Extra_Train_Count-((count-train.back().second)/3);return;}
         for(int i=0;i<g[p].size();i++)
         {
             int t=g[p][i];
@@ -114,8 +126,8 @@ void alpha(vector<vector<int>>g,int &s)
                 q.push(h);
             }
         }
-        if(n==0) {n=q.size();c+=5;}
-        if((count-train.back().second)/3<=c) {c=0;h.clear();return;}
+        if(n==0) {n=q.size();Extra_Train_Count+=5;}
+        if((count-train.back().second)/3<=Extra_Train_Count) {Extra_Train_Count=0;h.clear();return;}
     }
 }
 void gun(int &s)
@@ -127,29 +139,29 @@ void gun(int &s)
         int ab=train.back().second;
         train.pop_back();
         int cd=train.back().second;
-        chaitu-=(ab-cd)/3;
+        Train_Count-=(ab-cd)/3;
     }
-    v.pop_back();
+    Maintains_Path.pop_back();
 }
 void dfs(vector<vector<int>>g,int s)
 {
     vis1[s]=1;vis2[s]=1;
-    v.pb(s);
-    if(m[s]==1)
+    Maintains_Path.pb(s);
+    if(is_train_present[s]==1)
     {
         if(train.size()>0)
         {
-            chaitu+=(count-train.back().second)/3;
+            Train_Count+=(count-train.back().second)/3;
         }
         train.pb({s,count});
     }
-    if(s==e && x>v.size()) {bus=v;x=bus.size();}
-    if(s==e && train.size()>0 && m[s]!=1 && (count-train.back().second)/3>5) {alpha(g,s);}
-    else c=0;
-    if(s==e && count-chaitu+c<dis)
+    if(s==To && x>Maintains_Path.size()) {Bus_Path=Maintains_Path;x=Bus_Path.size();}
+    if(s==To && train.size()>0 && is_train_present[s]!=1 && (count-train.back().second)/3>5) {alpha(g,s);}
+    else Extra_Train_Count=0;
+    if(s==To && count-Train_Count+Extra_Train_Count<dis)
         {
-            dis=count-chaitu+c;
-            path=v;
+            dis=count-Train_Count+Extra_Train_Count;
+            Shortest_Path=Maintains_Path;
             gun(s);
             return;
         }
@@ -175,7 +187,7 @@ Map of Ts:               __Nijamabad<-->Adilabad
    Tirupati<-->Nellore<-->Ongole<-->Guntur<-->Vijayawada<-->Rajahmundry<-->Vizag<-->Vijayanagaram<-->Srikakulam
     
     */
-   m[0]=1;m[8]=1;m[3]=1;m[11]=1;m[15]=1;
+   is_train_present[0]=1;is_train_present[8]=1;is_train_present[3]=1;is_train_present[11]=1;is_train_present[15]=1;
    unordered_map<string,int>hello;
    hello["nellore"]=0;
    hello["Tirupati"]=1;
@@ -211,7 +223,7 @@ Map of Ts:               __Nijamabad<-->Adilabad
     g[0].pb(2);
     g[0].pb(10);
     g[0].pb(9);
-    //Tirupathi
+    //TiruShortest_Pathi
     g[1].pb(0);
     g[1].pb(9);
     //Ongole
@@ -240,13 +252,13 @@ Map of Ts:               __Nijamabad<-->Adilabad
     system("Color 0A");
     cout<<"1) Show the map of Andhra Pradesh."<<endl;
     cout<<"2) Show the map of Telangana."<<endl;
-    cout<<"3) Start your Journey."<<endl;
+    cout<<"3) From your Journey."<<endl;
      int nitr;cin>>nitr;
-     map<int,string>jithu;
+     map<int,string>Graph_Num;
      system("Color 0B");
     for(auto it:hello)
     {
-        jithu[it.second]=it.first;
+        Graph_Num[it.second]=it.first;
     }
     switch(nitr)
     {
@@ -257,10 +269,10 @@ Map of Ts:               __Nijamabad<-->Adilabad
             Telangana();
             break;
         default:
-            Start_Journey(jithu);
-            int s=st;
+            From_Journey(Graph_Num);
+            int s=From;
             dfs(g,s);
-            output(jithu);
+            output(Graph_Num);
     }
 
     return 0;
