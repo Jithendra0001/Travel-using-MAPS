@@ -10,7 +10,7 @@ using namespace std;
 int From,To;
 
 unordered_map<int,int>is_train_present; 
-
+unordered_map<int,int>plane;
 int dis=INT_MAX;
 int count=0;
 int vis1[1000005]={false};
@@ -19,62 +19,64 @@ int vis2[1000005]={false};
 vector<int>Shortest_Path;
 vector<int>Maintains_Path;
 vector<pair<int,int>>train;
-int Train_Count=0;
 int Extra_Train_Count=0;
+int Train_Count=0;
 vector<int>Bus_Path,h;
 int x=INT_MAX;
 
+
 void Telangana()
 {
-cout<<"                   Nijamabad<-->Adilabad"<<endl;
+cout<<"                   Nijamabad<-->Adilabad(T)"<<endl;
 cout<<"                        //"<<endl;
-cout<<"                  Hyderabad<-->Warangal<-->Khammam"<<endl;
+cout<<"                  Hyderabad(T)<-->Warangal<-->Khammam"<<endl;
 }
 void Andhramap()
 {
 cout<<"            Kurnool       Kadapa"<<endl;
 cout<<"          _____/  \\___________/__\\_____"<<endl;
 cout<<"         /          /                 \\"<<endl;
-cout<<"   Tirupati<-->Nellore<-->Ongole<-->Guntur<-->Vijayawada<-->Rajahmundry<-->Vizag<-->Vijayanagaram<-->Srikakulam"<<endl;
+cout<<"   Tirupati<-->Nellore(T)<-->Ongole<-->Guntur(T)<-->Vijayawada<-->Rajahmundry<-->Vizag<-->Vijayanagaram<-->Srikakulam(T)"<<endl;
     cout<<endl;
 }
     /*
-Map of Ts:               __Nijamabad<-->Adilabad
+Map of Ts:               __Nijamabad<-->Adilabad(T)
                         /
-                  ___Hyderabad<-->Warangal<-->Khammam
+                  ___Hyderabad(T)<-->Warangal<-->Khammam
    Map Of AP:    /                               |
                Kurnool       Kadapa              |
           _____/  \___________/__\_____          |
          /          /                 \          |
-   Tirupati<-->Nellore<-->Ongole<-->Guntur<-->Vijayawada<-->Rajahmundry<-->Vizag<-->Vijayanagaram<-->Srikakulam
+   Tirupati<-->Nellore(T)<-->Ongole<-->Guntur(T)<-->Vijayawada<-->Rajahmundry<-->Vizag<-->Vijayanagaram<-->Srikakulam(T)
     
     */
 void output(map<int,string>Graph_Num)
 {
     cout<<"Bus_Path Shortest_Path is:"<<endl;
     cout<<Graph_Num[Bus_Path[0]];
-    for(int it=1;it<Bus_Path.size();it++) {cout<<" ~~> "<<Graph_Num[Bus_Path[it]];}
-    cout<<"\nDistance: "<<(Bus_Path.size()-1)*3<<endl;
+    for(int it=1;it<Bus_Path.size();it++) {cout<<"--(Bus)--> "<<Graph_Num[Bus_Path[it]];}
+    cout<<"\nTime: "<<(Bus_Path.size()-1)*3<<endl;
 
     //Shortest_Path for train
     if(h.size()>1)
     Shortest_Path.insert(Shortest_Path.end()-1,h.rbegin(),h.rend()-1);
-    cout<<"Train Shortest_Path is"<<endl;
     vector<int>q;
     for(int i=0;i<Shortest_Path.size();i++)
     {
         if(is_train_present[Shortest_Path[i]]==1) q.pb(i);
     }
     int j=0,z=0;
-    if(q.size()<2) {cout<<"No Train Shortest_Path available"<<endl;}
+    if(q.size()<2) {cout<<"No Trains available"<<endl;}
     else{
-    for(int i=0;i<Shortest_Path.size();i++)
+        cout<<"Hurray, trains are available !"<<endl;
+    for(int i=0;i<Shortest_Path.size()-1;i++)
     {
         if(q[j]==i) {z=1;}
-        if(z==0) cout<<Graph_Num[Shortest_Path[i]]<<" ";
-        if(z==1) {cout<<Graph_Num[Shortest_Path[q[j++]]]<<" ";i=q[j]-1;if(j==q.size()) {z=0;i=q.back();}}
+        if(z==0) cout<<Graph_Num[Shortest_Path[i]]<<"-->";
+        if(z==1) {cout<<Graph_Num[Shortest_Path[q[j++]]]<<"-->";i=q[j]-1;if(j==q.size()) {z=0;i=q.back();}}
     }
-    cout<<endl<<dis<<endl;}
+    cout<<Graph_Num[To]<<endl;
+    cout<<endl<<"Time: "<<dis<<endl;}
 }
 void From_Journey(map<int,string>Graph_Num)
 {
@@ -90,8 +92,8 @@ void From_Journey(map<int,string>Graph_Num)
     cout<<"Select to address:\n";
     for(auto it:Graph_Num)
     {
-        if(it.first==st) continue;
-        if(it.first<st) cout<<it.first+1;
+        if(it.first==From) continue;
+        if(it.first<From) cout<<it.first+1;
         else cout<<it.first;
         cout<<") "<<it.second;
         if(is_train_present[it.first]==1) cout<<"( T )";
@@ -138,8 +140,11 @@ void gun(int &s)
     {
         int ab=train.back().second;
         train.pop_back();
+        if(train.size()>0)
+        {
         int cd=train.back().second;
         Train_Count-=(ab-cd)/3;
+        }
     }
     Maintains_Path.pop_back();
 }
@@ -151,7 +156,7 @@ void dfs(vector<vector<int>>g,int s)
     {
         if(train.size()>0)
         {
-            Train_Count+=(count-train.back().second)/3;
+            Train_Count+=(count-(train.back().second))/3;
         }
         train.pb({s,count});
     }
@@ -165,26 +170,27 @@ void dfs(vector<vector<int>>g,int s)
             gun(s);
             return;
         }
-    for(int i=0;i<g[s].size();i++)
-    {
-        int t=g[s][i];
-        if(vis1[t]==1 && vis2[t]==1) continue;
-        count+=3;
-        dfs(g,t);
-    }
+        for(int i=0;i<g[s].size();i++)
+        {
+            if(s==To) break;
+            int t=g[s][i];
+            if(vis1[t]==1 && vis2[t]==1) continue;
+            count+=3;
+            dfs(g,t);
+        }
     gun(s);
 }
 int  main()
 {
     /*
-Map of Ts:               __Nijamabad<-->Adilabad
+Map of Ts:               __Nijamabad<-->Adilabad(T)
                         /
-                  ___Hyderabad<-->Warangal<-->Khammam
+                  ___Hyderabad(T)<-->Warangal<-->Khammam
    Map Of AP:    /                               |
                Kurnool       Kadapa              |
           _____/  \___________/__\_____          |
          /          /                 \          |
-   Tirupati<-->Nellore<-->Ongole<-->Guntur<-->Vijayawada<-->Rajahmundry<-->Vizag<-->Vijayanagaram<-->Srikakulam
+   Tirupati<-->Nellore(T)<-->Ongole<-->Guntur(T)<-->Vijayawada<-->Rajahmundry<-->Vizag<-->Vijayanagaram<-->Srikakulam(T)
     
     */
    is_train_present[0]=1;is_train_present[8]=1;is_train_present[3]=1;is_train_present[11]=1;is_train_present[15]=1;
@@ -223,7 +229,7 @@ Map of Ts:               __Nijamabad<-->Adilabad
     g[0].pb(2);
     g[0].pb(10);
     g[0].pb(9);
-    //TiruShortest_Pathi
+    //TiruPathi
     g[1].pb(0);
     g[1].pb(9);
     //Ongole
@@ -248,7 +254,6 @@ Map of Ts:               __Nijamabad<-->Adilabad
     g[7].pb(8);
     //Srikakulam
     g[8].pb(7);
-
     system("Color 0A");
     cout<<"1) Show the map of Andhra Pradesh."<<endl;
     cout<<"2) Show the map of Telangana."<<endl;
@@ -274,6 +279,5 @@ Map of Ts:               __Nijamabad<-->Adilabad
             dfs(g,s);
             output(Graph_Num);
     }
-
     return 0;
 }
