@@ -9,7 +9,7 @@ using namespace std;
 #define pb push_back
 int From,To;
 
-unordered_map<int,int>is_train_present; 
+unordered_map<int,int>is_train_present;
 unordered_map<int,int>plane;
 int dis=INT_MAX;
 int count=0;
@@ -52,7 +52,7 @@ Map of Ts:               __Nijamabad<-->Adilabad(T)
     */
 void output(map<int,string>Graph_Num)
 {
-    cout<<"Bus_Path Shortest_Path is:"<<endl;
+    cout<<"Cheapest journey is:"<<endl;
     cout<<Graph_Num[Bus_Path[0]];
     for(int it=1;it<Bus_Path.size();it++) {cout<<"--(Bus)--> "<<Graph_Num[Bus_Path[it]];}
     cout<<"\nTime: "<<(Bus_Path.size()-1)*3<<endl;
@@ -76,11 +76,12 @@ void output(map<int,string>Graph_Num)
         if(z==1) {cout<<Graph_Num[Shortest_Path[q[j++]]]<<"-->";i=q[j]-1;if(j==q.size()) {z=0;i=q.back();}}
     }
     cout<<Graph_Num[To]<<endl;
-    cout<<endl<<"Time: "<<dis<<endl;}
+    cout<<"Time: "<<dis<<endl;}
 }
 void From_Journey(map<int,string>Graph_Num)
 {
     cout<<"Select from address:\n";
+    cout<<"Select a district:\n";
     for(auto it:Graph_Num)
     {
         cout<<it.first+1<<") "<<it.second;
@@ -148,7 +149,7 @@ void gun(int &s)
     }
     Maintains_Path.pop_back();
 }
-void dfs(vector<vector<int>>g,int s)
+void Main_Function(vector<vector<int>>g,int s)
 {
     vis1[s]=1;vis2[s]=1;
     Maintains_Path.pb(s);
@@ -176,7 +177,7 @@ void dfs(vector<vector<int>>g,int s)
             int t=g[s][i];
             if(vis1[t]==1 && vis2[t]==1) continue;
             count+=3;
-            dfs(g,t);
+            Main_Function(g,t);
         }
     gun(s);
 }
@@ -257,7 +258,7 @@ Map of Ts:               __Nijamabad<-->Adilabad(T)
     system("Color 0A");
     cout<<"1) Show the map of Andhra Pradesh."<<endl;
     cout<<"2) Show the map of Telangana."<<endl;
-    cout<<"3) From your Journey."<<endl;
+    cout<<"3) Start your Journey."<<endl;
      int nitr;cin>>nitr;
      map<int,string>Graph_Num;
      system("Color 0B");
@@ -276,7 +277,7 @@ Map of Ts:               __Nijamabad<-->Adilabad(T)
         default:
             From_Journey(Graph_Num);
             int s=From;
-            dfs(g,s);
+            Main_Function(g,s);
             output(Graph_Num);
     }
     return 0;
