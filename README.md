@@ -1,5 +1,6 @@
 # Travel_with_MAPS  
 ## This Project is under Development
+***
 ## Theme  
 * You are a tourist. You want to go from one place to another place.  
 * So, You bought a map of cities. _You saw that every city has a bus station but only Some cities have railway station._  
@@ -7,10 +8,9 @@
 
 This project is under development
 
-## Key points
-1) By default,  
-(i) Bus takes 3 Units of time from one place to adjacent place.  
-(ii) Train takes 2 Units of time from one place to adjacent place.  
+## Key points  
+* C++ Language is used in this project.
+* Graph data structure is used.
 
 ## Example  
 ### CityMap:  
