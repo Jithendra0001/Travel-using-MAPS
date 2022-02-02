@@ -1,12 +1,9 @@
 # Travel_with_MAPS  
 ## This Project is under Development
-***
 ## Theme  
 * You are a tourist. You want to go from one place to another place.  
 * So, You bought a map of cities. _You saw that every city has a bus station but only Some cities have railway station._  
 * You asked me to plan your journey.  
-
-This project is under development
 
 ## Key points  
 * C++ Language is used in this project.
