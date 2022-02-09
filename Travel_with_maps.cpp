@@ -4,6 +4,7 @@
 #include<queue>
 #include<map>
 #include<stdlib.h>
+#include<unistd.h>
 #define ll long long
 using namespace std;
 #define pb push_back
@@ -23,7 +24,7 @@ int Extra_Train_Count=0;
 int Train_Count=0;
 vector<int>Bus_Path,h;
 int x=INT_MAX;
-
+int db=3,dt=2;
 
 void Telangana()
 {
@@ -55,7 +56,7 @@ void output(map<int,string>Graph_Num)
     cout<<"Cheapest journey is:"<<endl;
     cout<<Graph_Num[Bus_Path[0]];
     for(int it=1;it<Bus_Path.size();it++) {cout<<"--(Bus)--> "<<Graph_Num[Bus_Path[it]];}
-    cout<<"\nTime: "<<(Bus_Path.size()-1)*3<<endl;
+    cout<<"\nTime: "<<(Bus_Path.size()-1)*db<<endl;
 
     //Shortest_Path for train
     if(h.size()>1)
@@ -80,7 +81,7 @@ void output(map<int,string>Graph_Num)
 }
 void From_Journey(map<int,string>Graph_Num)
 {
-    cout<<"Select from address:\n";
+    cout<<"/***********************Select From address:**********************/\n";
     cout<<"Select a district:\n";
     for(auto it:Graph_Num)
     {
@@ -90,7 +91,8 @@ void From_Journey(map<int,string>Graph_Num)
     }
     int st;cin>>st;
     From=st-1;
-    cout<<"Select to address:\n";
+    cout<<"/**********************Select To address:***********************/\n";
+    cout<<"Select a district:\n";
     for(auto it:Graph_Num)
     {
         if(it.first==From) continue;
@@ -118,7 +120,7 @@ void alpha(vector<vector<int>>g,int &s)
     {
         h=q.front();q.pop();
         int p=h.back();
-        if(is_train_present[p]==1) {Extra_Train_Count=Extra_Train_Count-((count-train.back().second)/3);return;}
+        if(is_train_present[p]==1) {Extra_Train_Count=Extra_Train_Count-((count-train.back().second)/db);return;}
         for(int i=0;i<g[p].size();i++)
         {
             int t=g[p][i];
@@ -129,13 +131,13 @@ void alpha(vector<vector<int>>g,int &s)
                 q.push(h);
             }
         }
-        if(n==0) {n=q.size();Extra_Train_Count+=5;}
-        if((count-train.back().second)/3<=Extra_Train_Count) {Extra_Train_Count=0;h.clear();return;}
+        if(n==0) {n=q.size();Extra_Train_Count+=(db+dt);}
+        if((count-train.back().second)/db<=Extra_Train_Count) {Extra_Train_Count=0;h.clear();return;}
     }
 }
 void gun(int &s)
 {
-    count-=3;
+    count-=db;
     vis2[s]=0;
     if(train.size()>0 && train.back().first==s) 
     {
@@ -144,7 +146,7 @@ void gun(int &s)
         if(train.size()>0)
         {
         int cd=train.back().second;
-        Train_Count-=(ab-cd)/3;
+        Train_Count-=(ab-cd)/db;
         }
     }
     Maintains_Path.pop_back();
@@ -157,12 +159,12 @@ void Main_Function(vector<vector<int>>g,int s)
     {
         if(train.size()>0)
         {
-            Train_Count+=(count-(train.back().second))/3;
+            Train_Count+=(count-(train.back().second))/db;
         }
         train.pb({s,count});
     }
     if(s==To && x>Maintains_Path.size()) {Bus_Path=Maintains_Path;x=Bus_Path.size();}
-    if(s==To && train.size()>0 && is_train_present[s]!=1 && (count-train.back().second)/3>5) {alpha(g,s);}
+    if(s==To && train.size()>0 && is_train_present[s]!=1 && (count-train.back().second)/db>(db+dt)) {alpha(g,s);}
     else Extra_Train_Count=0;
     if(s==To && count-Train_Count+Extra_Train_Count<dis)
         {
@@ -176,10 +178,34 @@ void Main_Function(vector<vector<int>>g,int s)
             if(s==To) break;
             int t=g[s][i];
             if(vis1[t]==1 && vis2[t]==1) continue;
-            count+=3;
+            count+=db;
             Main_Function(g,t);
         }
     gun(s);
+}
+void developer()
+{
+    cout<<"1) Change timing of bus."<<endl;
+    cout<<"2) Change timing of train."<<endl;
+    cout<<"3) Change both"<<endl;
+    int ab;cin>>ab;
+    if(ab==1)
+    {
+        cout<<"Enter time taken by bus to travel from one place to adjacent place.\n"<<endl;
+        cin>>db;
+    }
+    if(ab==2)
+    {
+        cout<<"Enter time taken by train to travel from one place to adjacent place.\n"<<endl;
+        cin>>dt;
+    }
+    if(ab==3)
+    {
+        cout<<"Enter time taken by bus to travel from one place to adjacent place.\n"<<endl;
+        cin>>db;
+        cout<<"Enter time taken by train to travel from one place to adjacent place.\n"<<endl;
+        cin>>dt;
+    }
 }
 int  main()
 {
@@ -255,13 +281,20 @@ Map of Ts:               __Nijamabad<-->Adilabad(T)
     g[7].pb(8);
     //Srikakulam
     g[8].pb(7);
-    system("Color 0A");
-    cout<<"1) Show the map of Andhra Pradesh."<<endl;
-    cout<<"2) Show the map of Telangana."<<endl;
-    cout<<"3) Start your Journey."<<endl;
+    int ran=1;
+    cout<<"\nNOTE: BY DEFAULT, 'BUS' TAKES 3 UNITS OF TIME AND 'TRAIN' TAKES 2 UNITS OF TIME TO TRAVEL FROM ONE CITY TO ADJACENT CITY\n\n";
+    sleep(3);
+    while(ran)
+    {
+    // system("Color 0A");
+    cout<<"__________Select an option____________"<<endl;
+    cout<<"1) Show me the maps"<<endl;
+    // cout<<"2) Show the map of Telangana."<<endl;
+    cout<<"2) Start your Journey."<<endl;
+    cout<<"3) Developer options"<<endl;
      int nitr;cin>>nitr;
      map<int,string>Graph_Num;
-     system("Color 0B");
+    //  system("Color 0B");
     for(auto it:hello)
     {
         Graph_Num[it.second]=it.first;
@@ -269,16 +302,31 @@ Map of Ts:               __Nijamabad<-->Adilabad(T)
     switch(nitr)
     {
         case 1:
+            cout<<"_______Choose an option_______"<<endl;
+            cout<<"1) Show me the map of Andhra pradesh"<<endl;
+            cout<<"2) Show me the map of Telangana"<<endl;
+            int map_count;cin>>map_count;
+            if(map_count==1)
             Andhramap();
-            break;
-        case 2:
+            else if(map_count==2)
             Telangana();
+            break;
+        case 3:
+            developer();
             break;
         default:
             From_Journey(Graph_Num);
             int s=From;
             Main_Function(g,s);
             output(Graph_Num);
+            break;           
     }
+    cout<<"\n/********************Choose an option*********************/"<<endl;
+    cout<<"\n1) Go to main menu"<<endl;
+    cout<<"2) Exit"<<endl;
+    cin>>ran;
+    if(ran==2) ran=0;
+    }
+    cout<<"/****************Thank You for visiting.***************/"<<endl;
     return 0;
 }
