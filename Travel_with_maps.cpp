@@ -82,30 +82,69 @@ void output(map<int,string>Graph_Num)
 void From_Journey(map<int,string>Graph_Num)
 {
     cout<<"/***********************Select From address:**********************/\n";
-    cout<<"Select a district:\n";
-    for(auto it:Graph_Num)
+    cout<<"_____Select a district_____\n";
+    cout<<"1) Andhra Pradesh"<<endl;
+    cout<<"2) Telangana"<<endl;
+    int map_count;cin>>map_count;
+    int st;
+    cout<<"___Select a City___"<<endl;
+    if(map_count==1)
     {
-        cout<<it.first+1<<") "<<it.second;
-        if(is_train_present[it.first]==1) cout<<"( T )";
-        cout<<endl;
+        for(int i=0;i<11;i++)
+        {
+            cout<<i+1<<") "<<Graph_Num[i];
+            if(is_train_present[i]==1) cout<<"( T )";
+            cout<<endl;
+        }
+        cin>>st;
+        From=st-1;
     }
-    int st;cin>>st;
-    From=st-1;
+    else if(map_count==2)
+    {
+        for(int i=11;i<16;i++){
+            cout<<i-10<<") "<<Graph_Num[i];
+            if(is_train_present[i]==1) cout<<"( T )";
+            cout<<endl;
+        }
+        cin>>st;
+        From=st+10;
+    }
     cout<<"/**********************Select To address:***********************/\n";
-    cout<<"Select a district:\n";
-    for(auto it:Graph_Num)
+    cout<<"__________Select a district___________\n";
+    cout<<"1) Andhra Pradesh"<<endl;
+    cout<<"2) Telangana"<<endl;
+    int To_count;cin>>To_count;
+    cout<<"___Select a City___"<<endl;
+    if(To_count==1)
     {
-        if(it.first==From) continue;
-        if(it.first<From) cout<<it.first+1;
-        else cout<<it.first;
-        cout<<") "<<it.second;
-        if(is_train_present[it.first]==1) cout<<"( T )";
-        cout<<endl;
+        int i=0;
+        for(int i=0;i<11;i++)
+        {
+            if(i==From) continue;
+            if(i<From) cout<<i+1;
+            else cout<<i;
+            cout<<") "<<Graph_Num[i];
+            if(is_train_present[i]==1) cout<<"( T )";
+            cout<<endl;
+        }
+        cin>>st;
+        if(st<From) st--;
     }
-    int e;
-    cin>>e;
-    if(e<From) e--;
-    To=e;
+    else if(To_count==2)
+    {
+        for(int i=11;i<16;i++)
+        {
+            if(i==From) continue;
+            if(i<From) cout<<i-10;
+            else cout<<i-11;
+            cout<<") "<<Graph_Num[i];
+            if(is_train_present[i]==1) cout<<"( T )";
+            cout<<endl;
+        }
+        cin>>st;st+=10;
+        if(st>From) st++;
+    }
+    To=st;
 }
 
 void alpha(vector<vector<int>>g,int &s)
@@ -319,9 +358,9 @@ Map of Ts:               __Nijamabad<-->Adilabad(T)
             int s=From;
             Main_Function(g,s);
             output(Graph_Num);
-            break;           
+            break;
     }
-    cout<<"\n/********************Choose an option*********************/"<<endl;
+    cout<<"\n_____Choose an option_______"<<endl;
     cout<<"\n1) Go to main menu"<<endl;
     cout<<"2) Exit"<<endl;
     cin>>ran;
